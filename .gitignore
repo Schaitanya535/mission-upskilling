@@ -1,0 +1,20 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Embedding / model caches (recompute, don't commit)
+*.npy
+*.pkl
+embeddings.*
+.cache/
+
+# Rust (later milestones)
+target/
+
+# JS (later milestones)
+node_modules/
+
+# OS / editor
+.DS_Store

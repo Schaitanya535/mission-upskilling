@@ -1,0 +1,70 @@
+Payload CMS is a headless content management system built specifically for the Next.js ecosystem with TypeScript support.
+Collections in Payload are groups of documents that share a common schema similar to database tables or WordPress post types.
+Every Payload collection automatically generates database schemas, admin UI interfaces, REST API endpoints, and GraphQL APIs.
+A Content Management System allows users to create, manage, and publish digital content without requiring deep technical knowledge.
+Payload installs directly into a Next.js application's /app folder rather than requiring separate backend management.
+Fields in Payload are the building blocks that define data schema with types including text, number, select, relationship, upload, and rich text.
+Payload supports database adapters for PostgreSQL, MongoDB, and SQLite with configuration determined by project requirements.
+Globals in Payload are single-document collections for site-wide settings like navigation menus and footer content.
+Hooks in Payload allow custom logic execution during document lifecycle events including beforeChange and afterChange.
+The admin panel in Payload is auto-generated, fully customizable, type-safe, and translated in 30+ languages.
+Request memoization in Next.js automatically caches fetch results for identical requests within a single render pass.
+Data cache in Next.js persists fetch results across server requests and deployments unless explicitly revalidated.
+Full route cache in Next.js caches HTML and React Server Component payloads at build time for static routes.
+Router cache in Next.js stores RSC payloads on the client side to improve navigation experience and reduce server requests.
+Time-based revalidation uses the next.revalidate option to refresh cached data after a specified number of seconds.
+On-demand revalidation in Next.js allows data cache invalidation based on events like form submissions via revalidatePath or revalidateTag.
+Static routes in Next.js are cached by default while dynamic routes are rendered at request time and not cached.
+Fetch calls in Next.js default to no-store behavior meaning data is never cached unless explicitly configured.
+An AI agent is an LLM wrapped in an autonomous loop that enables repeated decision-making and tool execution.
+Large Language Models are stateless passive systems that generate text based on training data without autonomy or memory.
+AI workflows differ from AI agents because they follow predefined human-designed paths without autonomous decision-making capability.
+The ReAct framework enables AI agents to reason about problems, decide on actions, execute those actions, and iterate based on results.
+Skills are portable self-contained units of domain knowledge that guide AI behavior but are insufficient alone for high reliability.
+A harness is the deterministic orchestration layer that sits between the user and the LLM to manage execution and context.
+Context assembly occurs before the LLM sees input to enrich raw user messages with system prompts, skills, and conversation history.
+Intent parsing reads structured JSON output from the LLM to identify which tools the model wants to execute.
+Tool execution happens in the harness through sandboxed environments preventing the model from directly accessing sensitive systems.
+Result injection formats tool outputs for the LLM including truncation, highlighting, and metadata about command success or failure.
+The agent loop continues until either a final answer is produced or budget and iteration limits are exceeded.
+Error handling in a production harness includes recovery strategies for malformed output, missing tools, and infinite loops.
+Determinism in harness design means making the orchestrator predictable through JSON parsing rather than model-based decisions.
+Distributed systems chunk logical entities into smaller pieces for parallelism and distribute those pieces across machines for fault tolerance.
+A topic in Kafka is a named append-only log similar to a database table containing ordered event records.
+Partitions in Kafka are physical chunks of a topic that serve as the unit of parallelism for producers and consumers.
+Consumer groups in Kafka coordinate consumption where each partition is assigned to exactly one consumer in the group.
+Kafka uses partition keys to guarantee that events with the same key go to the same partition maintaining order.
+Messages in Kafka are retained for configurable periods enabling consumers to replay events by resetting their offset.
+Log-based brokers like Kafka differ from traditional queues in that messages are retained rather than deleted after consumption.
+OpenSearch uses inverted indexes that map words to document IDs enabling fast full-text search without scanning entire documents.
+An index in OpenSearch is a logical collection of documents similar to a database table or Elasticsearch index.
+Shards in OpenSearch are physical chunks of an index where inverted indexes are built enabling distributed searching.
+The scatter-gather pattern in OpenSearch sends queries to all relevant shards then merges and re-ranks results from each shard.
+Text fields in OpenSearch are analyzed for full-text search while keyword fields are exact-match and used for aggregations.
+JWT tokens contain encoded claims about a user that can be verified using a public key from a JWKS endpoint.
+JWT authentication validates tokens using RS256 or similar asymmetric algorithms where the server verifies against a public key.
+The subscriptionType claim in JWT tokens determines which data transformations or access restrictions apply to authenticated requests.
+Anonymous access refers to requests without tokens that still reach an application but with limited data visibility.
+Access control interceptors in NestJS apply transforms to responses based on authentication status and subscription type.
+The hideFields transform removes specified fields from API responses for lower-tier subscription tiers.
+Fiber-based concurrency uses lightweight user-mode threads managed by applications rather than operating systems.
+Fibers are more efficient than traditional OS threads because they consume fewer resources and are created and destroyed faster.
+Goroutines in Go are lightweight user-space threads managed by the Go runtime using work-stealing and preemption.
+Work-stealing distributes workload across idle threads by allowing them to take tasks from busier threads' queues.
+Concurrency allows multiple tasks to execute with shared resources while parallelism requires dedicated processor cores.
+The Anthropocene epoch represents when humans significantly impacted global climate but was driven by specific regions not all humanity.
+Climate change resulted primarily from resource exploitation by wealthy nations and wealthy individuals rather than all people equally.
+Natural gas produces less CO2 than coal but methane leakage during extraction is a more potent greenhouse gas than CO2.
+Lithium extraction for EV batteries requires 20 tonnes of water per tonne of lithium damaging ecosystems in Bolivia Chile and Argentina.
+Infinite growth on a finite planet is mathematically impossible and must eventually encounter ecological boundaries.
+Degrowth advocates stopping GDP growth which optimizes for consumption rather than human satisfaction and wellbeing.
+Planetary boundaries define safe operating limits for Earth systems including carbon, biodiversity, and freshwater usage.
+Green colonialism refers to wealthy nations obtaining resources from poorer nations to fuel their renewable energy transitions.
+Eco-agriculture reduces reliance on fertilizers and pesticides compared to industrial monoculture that requires year-round chemical inputs.
+GDP measures money circulation through businesses but does not reflect personal connections satisfaction or true human wellbeing.
+Dynamic Programming is a problem-solving technique that breaks large problems into overlapping subproblems with optimal substructure.
+State identification in DP problems is non-obvious and requires pattern recognition across similar problem types.
+A two-pointer technique in DSA algorithms uses two indices moving through arrays to solve problems like detecting palindromes.
+Sliding window algorithms maintain a contiguous subset of elements solving problems like finding maximum subarray sums.
+Binary search finds target values in sorted arrays in O(log n) time by repeatedly halving the search space.
+Topological sort arranges directed acyclic graph nodes in an order where each node appears before nodes it points to.
