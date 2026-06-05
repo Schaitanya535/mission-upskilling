@@ -1,5 +1,5 @@
 from pathlib import Path
-import fastembed as fe
+from fastembed import TextEmbedding
 import utils.file_reader as fr
 
 DOCS_PATH = Path(__file__).parent / "docs.txt"
@@ -11,7 +11,7 @@ def read_data() -> list[str]:
 
 def load_model():
     # Deafult model is model_name: str = "BAAI/bge-small-en-v1.5",
-    return fe.TextEmbedding()
+    return TextEmbedding()
 
 
 def generate_embeddings():
@@ -21,7 +21,14 @@ def generate_embeddings():
     return embeddings
 
 
+# Use this method to check the models and change the models.
+def list_available_models():
+    for m in TextEmbedding.list_supported_models():
+        print(m["model"], m["dim"], m.get("size_in_GB"))
+
+
 def main():
+    # list_available_models()
     embeddings = generate_embeddings()
     print(embeddings)
 
