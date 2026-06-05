@@ -5,6 +5,8 @@ from fastembed import TextEmbedding
 from fastembed.common.types import NumpyArray
 import utils.file_reader as fr
 
+import heapq as hq
+
 DOCS_PATH = Path(__file__).parent / "docs.txt"
 
 
@@ -23,6 +25,29 @@ def get_score(data_point: NumpyArray, query: NumpyArray):
     return float(dot)
 
 
+def heap_search(database: list[tuple[NumpyArray, str]], query: NumpyArray, k: int):
+    k = min(k, len(database))
+    iter_db = iter(database)
+    count = 0
+    result: list[tuple[float, str]] = []
+    len_db = len(database)
+    while count < k:
+        data_point = next(iter_db)
+        score = get_score(data_point[0], query)
+        result.append((score, data_point[1]))
+        count += 1
+    hq.heapify(result)
+
+    for i in range(k, len_db):
+        data_point = next(iter_db)
+        score = get_score(data_point[0], query)
+        top = result[0]
+        if top[0] < score:
+            hq.heappop(result)
+            hq.heappush(result, (score, data_point[1]))
+    return result
+
+
 def search(database: Iterable[tuple[NumpyArray, str]], query: NumpyArray, k: int):
     scores = [
         (get_score(data_point[0], query), index, data_point[1])
@@ -36,12 +61,17 @@ def main():
     model = TextEmbedding("BAAI/bge-small-en-v1.5")
     db = generate_embeddings_data(model)
     query = """
-    Data Structures and Algorithms
+    Harness Engineering
     """
     embedded_query = generate_embedded_query(model, query)
     # print(embedded_query)
-    scores = search(db, embedded_query, 5)
-    for score in scores:
+    # scores = search(db, embedded_query, 5)
+    heap_scores = heap_search(list(db), embedded_query, 5)
+    heap_scores.sort(reverse=True)
+    # for score in scores:
+    #     print(score)
+    # print("\n###########################################\n")
+    for score in heap_scores:
         print(score)
 
 
