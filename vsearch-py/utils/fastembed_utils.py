@@ -1,12 +1,6 @@
 import numpy as np
 from fastembed import TextEmbedding
 
-
-def load_model():
-    # Deafult model is model_name: str = "BAAI/bge-small-en-v1.5",
-    return TextEmbedding()
-
-
 def check_normalised():
     v = TextEmbedding().embed((["hello world world world world hello hello "]))
     print("Normalization Score", np.linalg.norm(list(v)))
