@@ -32,14 +32,15 @@ def search(database: Iterable[tuple[NumpyArray, str]], query: NumpyArray, k: int
 
 
 def main():
-    model = TextEmbedding()
-    embeddings = generate_embeddings_data(model)
+    # Text Embedding pulls the specified model and caches it.
+    model = TextEmbedding("BAAI/bge-small-en-v1.5")
+    db = generate_embeddings_data(model)
     query = """
     Data Structures and Algorithms
     """
     embedded_query = generate_embedded_query(model, query)
     # print(embedded_query)
-    scores = search(embeddings, embedded_query, 5)
+    scores = search(db, embedded_query, 5)
     for score in scores:
         print(score)
 

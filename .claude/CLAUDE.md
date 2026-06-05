@@ -38,6 +38,7 @@ mission-upskilling/
 - M1 storage is in-memory on purpose; persistence is M5 (built by hand). Cache embeddings to a file only to avoid recompute — that's not "the database".
 - DSA practice done in Python, drilled when a milestone surfaces the structure (heap@M1, graph@M3).
 - Prefers concise / caveman-style replies; comment-out over delete; explain reasoning before workarounds.
+- **After finishing any task: update the Second Brain** — tick the Progress tracker, add a dated Log entry, and record relevant context/decisions (the *why*, gotchas, things learned) in the relevant vault note. Keep CLAUDE.md "Current state" in sync too.
 
-## Current state (2026-06-04)
-M1 in progress. `docs.txt` (70 lines) created. Next: embeddings + cosine + top-k (`sorted()` then `heapq`).
+## Current state (2026-06-05)
+M1 steps 1–5 done. `docs.txt` (70 lines) + `main.py`: bge-small-en-v1.5 via fastembed (384-dim, normalized → dot product = cosine), `sorted()` top-k working. Next: heapq min-heap top-k (M1 step 6), then DSA heap problems. Full notes in vault Progress tracker.

@@ -8,9 +8,9 @@ def parse_to_grid(line: str, seperator: str | None = None):
 
 
 def read_lines(filepath: str) -> list[str]:
-    """Read file and return list of lines (stripped)."""
+    """Read file and return list of lines (stripped) and blanks are ommitted."""
     with open(filepath) as f:
-        return [line.strip() for line in f]
+        return [line.strip() for line in f if line.strip()]
 
 
 def read_raw(filepath: str) -> str:
