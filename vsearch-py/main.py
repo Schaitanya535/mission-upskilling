@@ -25,30 +25,24 @@ def get_score(data_point: NumpyArray, query: NumpyArray):
     return float(dot)
 
 
-def heap_search(database: list[tuple[NumpyArray, str]], query: NumpyArray, k: int):
-    k = min(k, len(database))
-    iter_db = iter(database)
-    count = 0
-    result: list[tuple[float, str]] = []
-    len_db = len(database)
-    while count < k:
-        data_point = next(iter_db)
-        score = get_score(data_point[0], query)
-        result.append((score, data_point[1]))
-        count += 1
-    hq.heapify(result)
+def heap_search(db: list[tuple[NumpyArray, str]], query: NumpyArray, k: int):
+    k = min(k, len(db))
+    result: list[tuple[float, int, str]] = []
 
-    for i in range(k, len_db):
-        data_point = next(iter_db)
+    for index, data_point in enumerate(db):
         score = get_score(data_point[0], query)
-        top = result[0]
-        if top[0] < score:
-            hq.heappop(result)
-            hq.heappush(result, (score, data_point[1]))
+        if index < k:
+            hq.heappush(result, (score, index, data_point[1]))
+        else:
+            top = result[0]
+            if top[0] < score:
+                hq.heapreplace(result, (score, index, data_point[1]))
     return result
 
 
-def search(database: Iterable[tuple[NumpyArray, str]], query: NumpyArray, k: int):
+def bruteforce_search(
+    database: Iterable[tuple[NumpyArray, str]], query: NumpyArray, k: int
+):
     scores = [
         (get_score(data_point[0], query), index, data_point[1])
         for index, data_point in enumerate(database)
@@ -61,11 +55,11 @@ def main():
     model = TextEmbedding("BAAI/bge-small-en-v1.5")
     db = generate_embeddings_data(model)
     query = """
-    Harness Engineering
+    What is a Harness?
     """
     embedded_query = generate_embedded_query(model, query)
     # print(embedded_query)
-    # scores = search(db, embedded_query, 5)
+    # scores = bruteforce_search(db, embedded_query, 5)
     heap_scores = heap_search(list(db), embedded_query, 5)
     heap_scores.sort(reverse=True)
     # for score in scores:

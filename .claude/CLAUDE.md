@@ -41,4 +41,4 @@ mission-upskilling/
 - **After finishing any task: update the Second Brain** — tick the Progress tracker, add a dated Log entry, and record relevant context/decisions (the *why*, gotchas, things learned) in the relevant vault note. Keep CLAUDE.md "Current state" in sync too.
 
 ## Current state (2026-06-05)
-M1 steps 1–5 done. `docs.txt` (70 lines) + `main.py`: bge-small-en-v1.5 via fastembed (384-dim, normalized → dot product = cosine), `sorted()` top-k working. Next: heapq min-heap top-k (M1 step 6), then DSA heap problems. Full notes in vault Progress tracker.
+**M1 core done.** `docs.txt` (70 lines) + `main.py`: bge-small-en-v1.5 via fastembed (384-dim, normalized → dot product = cosine). Both `sorted()` top-k and `heap_search()` (size-k min-heap, O(n log k)) working + verified equal. Pending polish: simplify heap loop to plain `for`/`heapreplace`. Next: DSA heap problems (3–5), then M2 (Rust port). Full notes in vault Progress tracker.
