@@ -32,7 +32,7 @@ mission-upskilling/
 ```
 
 ## Conventions / decisions
-- Python tooling: **uv** (`uv add`, `uv run`). Each Python subproject gets its own `.venv` inside it.
+- Python tooling: **uv — always**. Every Python subproject (incl. `dsa-python/` and any drill/scratch dir) is created with `uv init` and run with `uv run` / `uv add`. Never hand-make a bare dir + `.py` files or use `python`/`pip` directly. Each subproject gets its own `.venv` inside it.
 - **Chaitanya writes all the code by hand** — this is a learning project. Claude explains, plans, reviews, harvests data; does NOT write the implementation unless asked.
 - M1 corpus: one idea per physical line in `docs.txt`; load with strip + skip-blanks.
 - M1 storage is in-memory on purpose; persistence is M5 (built by hand). Cache embeddings to a file only to avoid recompute — that's not "the database".
@@ -44,5 +44,9 @@ mission-upskilling/
 - **top-k vs threshold:** top-k = result cap, score threshold = relevance gate. Combine (take top-k, post-filter `score >= min_score`), don't replace. Fixed threshold (0.5) is a per-model/corpus heuristic, not absolute — cosine scores aren't calibrated. Smarter later = relative gap/elbow cutoff (the precision/recall dial; ties to recall@k M3, recall/latency M8). Planned M1.5: optional `min_score` param post-filtering heap output.
 - **DECIDED (2026-06-06): M3 before M2.** Build HNSW in Python first (DSA is the #1 goal; full focus on the algorithm), then port to Rust. Conditions: (1) build the Python HNSW **index-based** (nodes in a list, neighbors as integer ids — NOT object refs) so it ports 1:1 to Rust's arena/`Vec` model and supports M5 mmap; (2) M2 keeps a small Rust on-ramp (port brute-force cosine first) before porting HNSW. Executed order: M1 → heap drills → M3(py) → M2(rust) → M4–M8. Numbers stay as labels.
 
-## Current state (2026-06-05)
-**M1 DONE + committed. Working REPL demo live.** bge-small-en-v1.5 via fastembed (384-dim, normalized → dot product = cosine). `search.py`: `bruteforce_search` (sorted) + `heap_search` (size-k min-heap), `build_index()`/`query()` split (build-vs-query seam for API), `rel` threshold post-filter. `main.py`: infinite-loop REPL (exit/empty/Ctrl-C handled). Observed: fixed 0.5 threshold lets gibberish through → relative gap/elbow cutoff is the real fix (M1.5). Next: **DSA heap problems (3–5)**, then **M3 HNSW in Python** (index-based — see decided reorder), then M2 Rust port. Full notes in vault Progress tracker.
+## Current state (2026-06-07)
+**M1 DONE + committed. Working REPL demo live.** bge-small-en-v1.5 via fastembed (384-dim, normalized → dot product = cosine). `search.py`: `bruteforce_search` (sorted) + `heap_search` (size-k min-heap), `build_index()`/`query()` split (build-vs-query seam for API), `rel` threshold post-filter. `main.py`: infinite-loop REPL (exit/empty/Ctrl-C handled). Observed: fixed 0.5 threshold lets gibberish through → relative gap/elbow cutoff is the real fix (M1.5).
+
+**Heap drills scaffolded (2026-06-07):** `dsa-python/` is a uv project; `heaps/` has 5 problem stubs (kth-largest, top-k-frequent, merge-k-sorted, median-stream, task-scheduler) — signatures + oracle stubs + insight only, **not solved yet**. Run with `uv run python heaps/<file>.py` → prints `ok` when impl + oracle pass.
+
+Next: **solve the 5 heap drills**, then **M3 HNSW in Python** (index-based — see decided reorder), then M2 Rust port. Full notes in vault Progress tracker.
