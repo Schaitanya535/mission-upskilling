@@ -40,5 +40,9 @@ mission-upskilling/
 - Prefers concise / caveman-style replies; comment-out over delete; explain reasoning before workarounds.
 - **After finishing any task: update the Second Brain** — tick the Progress tracker, add a dated Log entry, and record relevant context/decisions (the *why*, gotchas, things learned) in the relevant vault note. Keep CLAUDE.md "Current state" in sync too.
 
+## Open design notes
+- **top-k vs threshold:** top-k = result cap, score threshold = relevance gate. Combine (take top-k, post-filter `score >= min_score`), don't replace. Fixed threshold (0.5) is a per-model/corpus heuristic, not absolute — cosine scores aren't calibrated. Smarter later = relative gap/elbow cutoff (the precision/recall dial; ties to recall@k M3, recall/latency M8). Planned M1.5: optional `min_score` param post-filtering heap output.
+- **DECIDED (2026-06-06): M3 before M2.** Build HNSW in Python first (DSA is the #1 goal; full focus on the algorithm), then port to Rust. Conditions: (1) build the Python HNSW **index-based** (nodes in a list, neighbors as integer ids — NOT object refs) so it ports 1:1 to Rust's arena/`Vec` model and supports M5 mmap; (2) M2 keeps a small Rust on-ramp (port brute-force cosine first) before porting HNSW. Executed order: M1 → heap drills → M3(py) → M2(rust) → M4–M8. Numbers stay as labels.
+
 ## Current state (2026-06-05)
-**M1 core done.** `docs.txt` (70 lines) + `main.py`: bge-small-en-v1.5 via fastembed (384-dim, normalized → dot product = cosine). Both `sorted()` top-k and `heap_search()` (size-k min-heap, O(n log k)) working + verified equal. Pending polish: simplify heap loop to plain `for`/`heapreplace`. Next: DSA heap problems (3–5), then M2 (Rust port). Full notes in vault Progress tracker.
+**M1 DONE + committed.** `docs.txt` (70 lines) + `main.py`: bge-small-en-v1.5 via fastembed (384-dim, normalized → dot product = cosine). `bruteforce_search` (sorted) + `heap_search` (size-k min-heap, O(n log k)), verified equal. Next: **DSA heap problems (3–5)**, then **M3 HNSW in Python** (index-based — see decided reorder), then M2 Rust port. Backlog: M1.5 `min_score` threshold. Full notes in vault Progress tracker.
