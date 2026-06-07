@@ -1,3 +1,5 @@
+import heapq
+
 """
 Problem 2 — Top K frequent elements.
 
@@ -22,13 +24,36 @@ Target: O(n log k).
 """
 
 
+def get_counts(nums: list[int]) -> list[tuple[int, int]]:
+
+    counts: dict[int, int] = {}
+    for num in nums:
+        count = counts.get(num)
+        if count:
+            counts[num] = count + 1
+        else:
+            counts[num] = 1
+    return [(val, key) for (key, val) in counts.items()]
+
+
 def top_k_frequent(nums: list[int], k: int) -> list[int]:
-    raise NotImplementedError
+    counts = get_counts(nums)
+    result: list[tuple[int, int]] = []
+    for index, count in enumerate(counts):
+        if index < k:
+            heapq.heappush(result, count)
+        else:
+            top = result[0][0]
+            if count[0] > top:
+                heapq.heapreplace(result, count)
+    return [key for (_, key) in result][:k]
 
 
 def brute_top_k_frequent(nums: list[int], k: int) -> list[int]:
-    """Oracle. Count + sort."""
-    raise NotImplementedError
+    # """Oracle. Count + sort."""
+    counts = get_counts(nums)
+    counts.sort(reverse=True)
+    return [key for (_, key) in counts][:k]
 
 
 if __name__ == "__main__":
