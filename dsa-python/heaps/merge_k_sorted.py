@@ -25,14 +25,32 @@ Heap insight to discover:
 Target: O(N log k), N = total elements.
 """
 
+import heapq
+
 
 def merge_k_sorted(lists: list[list[int]]) -> list[int]:
-    raise NotImplementedError
+    merged_list: list[int] = []
+    # in my sortq hold the value, which list its from, its index
+    sortq: list[tuple[int, int, int]] = []
+    for lst_idx, lst in enumerate(lists):
+        if len(lst):
+            heapq.heappush(sortq, (lst[0], lst_idx, 0))
+    while len(sortq):
+        (val, list_idx, idx) = heapq.heappop(sortq)
+        merged_list.append(val)
+        if idx < (len(lists[list_idx]) - 1):
+            heapq.heappush(sortq, (lists[list_idx][idx + 1], list_idx, idx + 1))
+
+    return merged_list
 
 
 def brute_merge_k_sorted(lists: list[list[int]]) -> list[int]:
-    """Oracle. Concat + sort."""
-    raise NotImplementedError
+    # """Oracle. Concat + sort."""
+    ans: list[int] = []
+    for lst in lists:
+        ans.extend(lst)
+    ans.sort()
+    return ans
 
 
 if __name__ == "__main__":
