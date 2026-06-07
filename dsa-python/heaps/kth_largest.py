@@ -1,3 +1,5 @@
+import heapq
+
 """
 Problem 1 — Kth largest element in an array.
 
@@ -21,12 +23,21 @@ Target complexity: O(n log k) time, O(k) space.
 
 
 def kth_largest(nums: list[int], k: int) -> int:
-    raise NotImplementedError
+    result: list[int] = []
+    for index, num in enumerate(nums):
+        if index < k:
+            heapq.heappush(result, num)
+        else:
+            top = result[0]
+            if num > top:
+                heapq.heapreplace(result, num)
+    return result[0]
 
 
 def brute_kth_largest(nums: list[int], k: int) -> int:
-    """Oracle. Sort-based. Write this first, test the heap version against it."""
-    raise NotImplementedError
+    # """Oracle. Sort-based. Write this first, test the heap version against it."""
+    nums.sort(reverse=True)
+    return nums[k - 1]
 
 
 if __name__ == "__main__":
