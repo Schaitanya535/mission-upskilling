@@ -31,67 +31,35 @@ Target: O(log n) add, O(1) median.
 
 
 class MedianFinder:
-    __max_heap: list[int]
-    __min_heap: list[int]
-    # __size: int
-
     def __init__(self) -> None:
-        self.__max_heap = []
-        self.__min_heap = []
+
+        # lower half first
+        self._low = []
+        self._high = []
         # self.__size = 0
         # raise NotImplementedError
 
     def add(self, num: int) -> None:
-        max_heap_len = len(self.__max_heap)
-        min_heap_len = len(self.__min_heap)
+        # Took help from claude to get the algorighm
+        # understood it and implemented it myself.
 
-        if max_heap_len == 0:
-            self.__max_heap.append(num)
-            # self.__size += 1
-            return
+        # Always do the pushpop first on the low.
+        # Then put the popped elemnet to the high.
+        # Rebalance if (len(low) > len(high))
 
-        if min_heap_len == 0:
-            if num >= self.__max_heap[0]:
-                self.__min_heap.append(num)
-            else:
-                prev_left_middle = heapq.heapreplace_max(self.__max_heap, num)
-                self.__min_heap.append(prev_left_middle)
-            # self.__size += 1
-            return
-
-        left_middle = self.__max_heap[0]
-
-        if num < left_middle:
-            if max_heap_len > min_heap_len:
-                prev_left_middle = heapq.heappushpop_max(self.__max_heap, num)
-                heapq.heappush(self.__min_heap, prev_left_middle)
-            else:
-                heapq.heappush_max(self.__max_heap, num)
-        else:
-            if min_heap_len > max_heap_len:
-                prev_right_middle = heapq.heappushpop(self.__min_heap, num)
-                heapq.heappush_max(self.__max_heap, prev_right_middle)
-            else:
-                heapq.heappush(self.__min_heap, num)
-        # self.__size += 1
+        heapq.heappush(self._high, heapq.heappushpop_max(self._low, num))
+        if len(self._low) < len(self._high):
+            heapq.heappush_max(self._low, heapq.heappop(self._high))
         return
-        # raise NotImplementedError
 
     def median(self) -> float:
-        left_side = self.__max_heap
-        right_side = self.__min_heap
-
         median = 0.0
-        if len(left_side) < len(right_side):
-            median = right_side[0]
-        elif len(right_side) < len(left_side):
-            median = left_side[0]
-        else:
-            median = (left_side[0] + right_side[0]) / 2
-        # print(median)
-        return median
 
-        # raise NotImplementedError
+        if len(self._low) > len(self._high):
+            median = self._low[0]
+        else:
+            median = (self._low[0] + self._high[0]) / 2
+        return median
 
 
 def _brute_median(seen: list[int]) -> float:
