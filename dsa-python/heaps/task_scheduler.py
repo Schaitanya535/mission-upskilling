@@ -1,3 +1,5 @@
+import heapq
+
 """
 Problem 5 (stretch) — Task scheduler.
 
@@ -25,13 +27,54 @@ Target: O(total_tasks) with the heap+queue simulation.
 """
 
 
+def get_freq(tasks: list[str]) -> dict[str, int]:
+    freq: dict[str, int] = {}
+    for task in tasks:
+        freq[task] = freq.get(task, 0) + 1
+    return freq
+
+
 def least_intervals(tasks: list[str], n: int) -> int:
-    raise NotImplementedError
+
+    # Idea is taht on every iteration, we will first look at the cooldown heap
+    # if the items on the cooldown heap are cooled, we will move back back to the
+    # processing heap. Process them, and put them in the heap.
+
+    # at any point of time if the processing heap is empty but the cooldown heap isn't then we will
+    # print idle.
+
+    # we will end the program when both the heaps are empty
+
+    process_heap = [(freq, task) for (task, freq) in get_freq(tasks).items()]
+    heapq.heapify_max(process_heap)
+    # cool down q will be a (min) heap with the shape of tuple(cooldown_tick, frequency, task_name) .
+    cool_down_q: list[tuple[int, int, str]] = []
+
+    tick = 0
+    while len(cool_down_q) != 0 or len(process_heap) != 0:
+        while (cool_down_q) and (cool_down_q[0][0] < tick):
+            top = heapq.heappop(cool_down_q)
+            heapq.heappush_max(process_heap, (top[1], top[2]))
+
+        if len(process_heap) == 0:
+            # idle case
+            tick += 1
+            continue
+        top = heapq.heappop_max(process_heap)
+        if top[0] - 1 > 0:
+            # reduce the count and put it in the cooldown q
+            heapq.heappush(cool_down_q, (tick + n, top[0] - 1, top[1]))
+        tick += 1
+    return tick
 
 
 def brute_least_intervals(tasks: list[str], n: int) -> int:
-    """Oracle. The closed-form formula — derive and use it to check the sim."""
-    raise NotImplementedError
+
+    freq = get_freq(tasks)
+    max_freq = max(freq.values())
+    cnt_max = sum(1 for val in freq.values() if val == max_freq)
+    formula = (max_freq - 1) * (n + 1) + cnt_max
+    return max((formula), len(tasks))
 
 
 if __name__ == "__main__":
