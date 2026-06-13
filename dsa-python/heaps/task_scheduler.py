@@ -35,15 +35,17 @@ def get_freq(tasks: list[str]) -> dict[str, int]:
 
 
 def least_intervals(tasks: list[str], n: int) -> int:
+    """
+    Idea is that on every iteration, we will first look at the cooldown heap
+    if the items on the cooldown heap are cooled, we will move back to the
+    processing heap.
 
-    # Idea is taht on every iteration, we will first look at the cooldown heap
-    # if the items on the cooldown heap are cooled, we will move back back to the
-    # processing heap. Process them, and put them in the heap.
+    Process them (print and reduce the count) and put them in the heap. At
+    any point of time if the processing heap is empty but the cooldown heap
+    isn't then we will print idle.
 
-    # at any point of time if the processing heap is empty but the cooldown heap isn't then we will
-    # print idle.
-
-    # we will end the program when both the heaps are empty
+    We will end the program when both the heaps are empty
+    """
 
     process_heap = [(freq, task) for (task, freq) in get_freq(tasks).items()]
     heapq.heapify_max(process_heap)
@@ -69,6 +71,25 @@ def least_intervals(tasks: list[str], n: int) -> int:
 
 
 def brute_least_intervals(tasks: list[str], n: int) -> int:
+    """
+    Build the skeleton from the most frequent task.
+    Let maxf = highest count, cnt_max = how many tasks tie at maxf.
+
+    Place the max-freq task with mandatory gaps:
+    A . . A . . A          maxf=3, n=2
+    - (maxf - 1) gaps between the A's.
+    - Each gap is width (n + 1) (the A itself + n cooldown slots).
+    - That's (maxf - 1) * (n + 1) cells for the first maxf-1 rows.
+    - Final row: the last A, plus one slot for each other task that also
+    hit maxf → add cnt_max.
+
+    (maxf - 1) * (n + 1) + cnt_max
+
+    The catch — too many distinct tasks fill the gaps. If you have so many
+    tasks they spill past the skeleton, there are zero idles and the answer
+    is just len(tasks). Formula can undercount there. So:
+    return max(formula, len(tasks))
+    """
 
     freq = get_freq(tasks)
     max_freq = max(freq.values())
