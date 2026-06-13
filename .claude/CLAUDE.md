@@ -47,7 +47,9 @@ mission-upskilling/
 ## Current state (2026-06-13)
 **Heap drills DONE 5/5.** task_scheduler shipped — greedy max-heap + min-heap cooldown queue `(ready_tick, count, task)`, `ready = tick + n` released on strict `<`. Closed-form oracle `max((maxf-1)*(n+1)+cnt_max, len(tasks))`. All 5 drills (kth-largest, top-k-frequent, merge-k-sorted, median-stream, task-scheduler) pass vs oracle.
 
-Next: **M3 HNSW in Python** (index-based — nodes in a list, neighbours as int ids). Graph/hashing drills may scaffold first as warm-up. See vault Progress tracker.
+**M3 started — graph drills scaffolded** in `dsa-python/graphs/` (5 stubs, heap-drill convention, not solved yet): `connected_components`, `bfs_shortest_hops`, `dijkstra`, `greedy_nn_walk` (mini-HNSW single layer), `beam_search` (= HNSW `efSearch`, stretch). All index-based (`adj: list[list[int]]`, nodes = int ids — the M3 rule). Laddered to land on HNSW: 1-2 traversal, 3 priority-queue search, 4-5 HNSW search loop in miniature + recall/latency.
+
+Next: solve the 5 graph drills in order, then build **M3 HNSW proper** (Python, index-based). See vault Progress tracker.
 
 <!-- prior state below -->
 ## Current state (2026-06-07)
