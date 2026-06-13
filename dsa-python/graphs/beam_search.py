@@ -1,4 +1,4 @@
-import heapq
+import heapq  # noqa: F401 -- you'll need it (two heaps); unused until you implement
 
 """
 Problem 5 (stretch) — Best-first beam search on a proximity graph.  *** HNSW efSearch ***
@@ -60,6 +60,10 @@ if __name__ == "__main__":
     for points, adj, entry, query, k, ef, want in cases:
         got = beam_search(points, adj, entry, query, k, ef)
         assert sorted(got) == sorted(want) == sorted(brute_top_k(points, query, k)), (
-            query, k, ef, got, want,
+            query,
+            k,
+            ef,
+            got,
+            want,
         )
     print("ok")

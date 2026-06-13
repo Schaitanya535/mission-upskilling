@@ -1,4 +1,4 @@
-import heapq
+import heapq  # noqa: F401 -- you'll need it (min-heap frontier); unused until you implement
 
 """
 Problem 3 — Dijkstra: shortest weighted path from a source.

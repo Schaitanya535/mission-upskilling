@@ -1,4 +1,4 @@
-from collections import deque
+from collections import deque  # noqa: F401 -- you'll need it (BFS queue); unused until you implement
 
 """
 Problem 2 — Shortest hops from a source (unweighted graph).
