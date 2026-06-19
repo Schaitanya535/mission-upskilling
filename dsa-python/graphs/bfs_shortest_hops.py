@@ -53,9 +53,20 @@ def shortest_hops(n: int, adj: list[list[int]], src: int) -> list[int]:
     return result
 
 
+def dfs(src: int, c_depth: int, adj: list[list[int]], depth: list[int]) -> None:
+    adj_nodes = adj[src]
+    for node in adj_nodes:
+        if depth[node] == -1 or depth[node] > c_depth:
+            depth[node] = c_depth
+            dfs(node, c_depth + 1, adj, depth)
+
+
 def brute_shortest_hops(n: int, adj: list[list[int]], src: int) -> list[int]:
     """Oracle. Iterative-deepening depth-limited DFS — independent of BFS."""
-    raise NotImplementedError
+    result = [-1] * n
+    result[src] = 0
+    dfs(src, 1, adj, result)
+    return result
 
 
 if __name__ == "__main__":
@@ -66,6 +77,5 @@ if __name__ == "__main__":
     ]
     for n, adj, src, want in cases:
         got = shortest_hops(n, adj, src)
-        print(got)
-        # assert got == want == brute_shortest_hops(n, adj, src), (n, adj, src, got, want)
+        assert got == want == brute_shortest_hops(n, adj, src), (n, adj, src, got, want)
     print("ok")
