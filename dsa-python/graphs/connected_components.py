@@ -49,7 +49,7 @@ def count_components(n: int, adj: list[list[int]]) -> int:
 
 
 def union(parent: list[int], rank: list[int], a: int, b: int) -> bool:
-    ra, rb = find(parent, a), find(parent, b)
+    ra, rb = find_while_half(parent, a), find_while_half(parent, b)
     if ra == rb:
         return False
     if rank[ra] < rank[rb]:
@@ -60,13 +60,21 @@ def union(parent: list[int], rank: list[int], a: int, b: int) -> bool:
     return True
 
 
-def find(parents: list[int], x: int) -> int:
+def find_and_flatten(parents: list[int], x: int) -> int:
     if parents[x] == x:
         return x
     else:
-        r = find(parents, parents[x])
+        r = find_and_flatten(parents, parents[x])
         parents[x] = r
         return r
+
+
+def find_while_half(parent: list[int], x: int) -> int:
+    # avoids recursion depth issues when
+    while parent[x] != x:
+        parent[x] = parent[parent[x]]
+        x = parent[x]
+    return x
 
 
 def brute_count_components(n: int, adj: list[list[int]]) -> int:
@@ -75,7 +83,7 @@ def brute_count_components(n: int, adj: list[list[int]]) -> int:
     for x, list_y in enumerate(adj):
         for y in list_y:
             union(parent, rank, x, y)
-    return len({find(parent, i) for i in range(n)})
+    return len({find_while_half(parent, i) for i in range(n)})
 
 
 if __name__ == "__main__":
