@@ -62,7 +62,8 @@ def dfs(src: int, c_depth: int, adj: list[list[int]], depth: list[int]) -> None:
 
 
 def brute_shortest_hops(n: int, adj: list[list[int]], src: int) -> list[int]:
-    """Oracle. Iterative-deepening depth-limited DFS — independent of BFS."""
+    """Oracle. Relaxed DFS (revisit a node when reached by a shorter depth)
+    — independent of BFS."""
     result = [-1] * n
     result[src] = 0
     dfs(src, 1, adj, result)
