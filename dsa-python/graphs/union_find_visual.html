@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Union-Find — Visual Teaching Tool</title>
+<style>
+  :root {
+    --bg: #011627;          /* Night Owl bg */
+    --panel: #0b2942;
+    --panel2: #102a43;
+    --ink: #d6deeb;
+    --muted: #5f7e97;
+    --accent: #82aaff;      /* blue */
+    --accent2: #c792ea;     /* purple */
+    --green: #addb67;
+    --orange: #f78c6c;
+    --red: #ef5350;
+    --line: #1d3b53;
+    --root: #ffeb95;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+  header h1 { margin: 0 0 4px; font-size: 20px; color: var(--accent); }
+  header p { margin: 0; color: var(--muted); font-size: 13px; }
+
+  .wrap { display: flex; gap: 0; min-height: calc(100vh - 70px); }
+  .controls {
+    width: 320px;
+    flex-shrink: 0;
+    padding: 18px;
+    border-right: 1px solid var(--line);
+    background: var(--panel);
+    overflow-y: auto;
+  }
+  .stage { flex: 1; padding: 18px; display: flex; flex-direction: column; }
+
+  .mode-group { margin-bottom: 18px; }
+  .mode-group label.title {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .mode-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--panel2);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    transition: all .12s;
+  }
+  .mode-btn:hover { border-color: var(--accent); }
+  .mode-btn.active { border-color: var(--accent); background: #16395c; color: var(--accent); }
+  .mode-btn small { display: block; color: var(--muted); font-size: 10px; margin-top: 2px; }
+  .mode-btn.active small { color: #9bb8d6; }
+
+  .row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; }
+  .row input[type="number"] {
+    width: 56px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 5px;
+    padding: 6px;
+    font-family: inherit;
+    text-align: center;
+  }
+  .row span { color: var(--muted); font-size: 13px; }
+  button.act {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 12px;
+    flex: 1;
+  }
+  button.act:hover { filter: brightness(1.1); }
+  button.ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    flex: 1;
+  }
+  button.ghost:hover { color: var(--ink); border-color: var(--accent); }
+
+  .log {
+    margin-top: 14px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 11px;
+    height: 180px;
+    overflow-y: auto;
+    color: var(--muted);
+  }
+  .log .l { margin-bottom: 3px; }
+  .log .l b { color: var(--green); }
+  .log .l .hl { color: var(--orange); }
+
+  svg { width: 100%; flex: 1; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+  .node circle { transition: all .35s ease; }
+  .node text { fill: var(--bg); font-weight: 700; font-size: 14px; pointer-events: none; }
+  .node.root circle { stroke: var(--root); stroke-width: 3px; }
+  .edge { stroke: var(--muted); stroke-width: 2px; transition: all .35s ease; }
+  .edge.flash { stroke: var(--orange); stroke-width: 3.5px; }
+  .edge.compress { stroke: var(--green); stroke-dasharray: 4 3; }
+
+  .stats { display: flex; gap: 18px; margin-bottom: 10px; font-size: 12px; }
+  .stats .stat b { color: var(--accent2); }
+  .legend { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .legend span { margin-right: 14px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; margin-right: 4px; }
+  .arrtxt { font-family: inherit; font-size: 12px; margin-top: 10px; color: var(--muted); word-break: break-all; }
+  .arrtxt b { color: var(--ink); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Union-Find (Disjoint Set Union) — Visual</h1>
+  <p>Pick a variant. Run unions. Click a node to <b>find()</b> its root and watch the path. Yellow ring = root. Arrows point child → parent.</p>
+</header>
+
+<div class="wrap">
+  <div class="controls">
+    <div class="mode-group">
+      <label class="title">Variant</label>
+      <button class="mode-btn active" data-mode="naive">
+        Naive
+        <small>blind merge · find O(n)</small>
+      </button>
+      <button class="mode-btn" data-mode="rank">
+        Union by Rank
+        <small>short under tall · find O(log n)</small>
+      </button>
+      <button class="mode-btn" data-mode="compress">
+        Path Compression
+        <small>flatten on find · amortized ~O(1)</small>
+      </button>
+      <button class="mode-btn" data-mode="both">
+        Rank + Compression
+        <small>optimal · O(α(n)) ≈ O(1)</small>
+      </button>
+    </div>
+
+    <div class="mode-group">
+      <label class="title">Node count</label>
+      <div class="row">
+        <input type="number" id="ncount" value="10" min="2" max="16" />
+        <button class="ghost" id="reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="mode-group">
+      <label class="title">union(a, b)</label>
+      <div class="row">
+        <input type="number" id="ua" value="0" min="0" />
+        <span>+</span>
+        <input type="number" id="ub" value="1" min="0" />
+        <button class="act" id="dounion">Union</button>
+      </div>
+      <div class="row">
+        <button class="ghost" id="worstcase">Build worst-case chain</button>
+      </div>
+      <div class="row">
+        <button class="ghost" id="randuni">Random unions ×5</button>
+      </div>
+    </div>
+
+    <div class="mode-group">
+      <label class="title">find(x)</label>
+      <div class="row">
+        <input type="number" id="fx" value="0" min="0" />
+        <button class="act" id="dofind">Find</button>
+      </div>
+      <p style="color:var(--muted);font-size:11px;margin:4px 0 0">Tip: click any node to find it.</p>
+    </div>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <div class="stage">
+    <div class="stats">
+      <div class="stat">groups: <b id="ngroups">0</b></div>
+      <div class="stat">max tree height: <b id="maxh">0</b></div>
+      <div class="stat">last find steps: <b id="laststeps">0</b></div>
+    </div>
+    <svg id="svg" viewBox="0 0 900 520" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5f7e97" />
+        </marker>
+      </defs>
+    </svg>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--root)"></span>root</span>
+      <span><span class="dot" style="background:var(--accent)"></span>node</span>
+      <span><span class="dot" style="background:var(--orange)"></span>find path</span>
+      <span><span class="dot" style="background:var(--green)"></span>compression re-link</span>
+    </div>
+    <div class="arrtxt" id="arrtxt"></div>
+  </div>
+</div>
+
+<script>
+const SVG_NS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById("svg");
+const logEl = document.getElementById("log");
+
+let mode = "naive";
+let n = 10;
+let parent = [];
+let rank = [];   // used as rank (by height) for rank/both modes
+let nodes = [];  // {x, y}
+
+function log(html, hl) {
+  const div = document.createElement("div");
+  div.className = "l";
+  div.innerHTML = html;
+  logEl.prepend(div);
+}
+
+function init(count) {
+  n = count;
+  parent = Array.from({length: n}, (_, i) => i);
+  rank = Array(n).fill(0);
+  layout();
+  render();
+  logEl.innerHTML = "";
+  log(`init <b>${n}</b> singletons. parent[i]=i`);
+}
+
+// position nodes on a grid; tree edges drawn over them
+function layout() {
+  nodes = [];
+  const cols = Math.ceil(Math.sqrt(n) * 1.3);
+  const W = 900, H = 520, padX = 70, padY = 60;
+  const rows = Math.ceil(n / cols);
+  const dx = (W - 2*padX) / Math.max(1, cols - 1);
+  const dy = (H - 2*padY) / Math.max(1, rows - 1);
+  for (let i = 0; i < n; i++) {
+    const r = Math.floor(i / cols), c = i % cols;
+    nodes.push({ x: padX + c*dx, y: padY + r*dy });
+  }
+}
+
+function find_internal(x, track) {
+  // returns root; track = array to record path
+  let cur = x;
+  while (parent[cur] !== cur) {
+    if (track) track.push(cur);
+    cur = parent[cur];
+  }
+  if (track) track.push(cur);
+  return cur;
+}
+
+function heightOf(root) {
+  // compute height of tree rooted at root by scanning children depths
+  // build children map
+  const children = {};
+  for (let i = 0; i < n; i++) {
+    if (parent[i] !== i) (children[parent[i]] ??= []).push(i);
+  }
+  function depth(node) {
+    const ch = children[node] || [];
+    if (!ch.length) return 0;
+    return 1 + Math.max(...ch.map(depth));
+  }
+  return depth(root);
+}
+
+function stats() {
+  const roots = new Set();
+  for (let i = 0; i < n; i++) roots.add(find_internal(i));
+  let maxh = 0;
+  roots.forEach(r => maxh = Math.max(maxh, heightOf(r)));
+  document.getElementById("ngroups").textContent = roots.size;
+  document.getElementById("maxh").textContent = maxh;
+}
+
+function render(pathSet, compressSet) {
+  // clear (keep defs)
+  [...svg.querySelectorAll(".edge,.node")].forEach(e => e.remove());
+  // edges child -> parent
+  for (let i = 0; i < n; i++) {
+    if (parent[i] === i) continue;
+    const a = nodes[i], b = nodes[parent[i]];
+    const line = document.createElementNS(SVG_NS, "line");
+    line.setAttribute("x1", a.x); line.setAttribute("y1", a.y);
+    line.setAttribute("x2", b.x); line.setAttribute("y2", b.y);
+    line.setAttribute("class", "edge");
+    line.setAttribute("marker-end", "url(#arrow)");
+    if (compressSet && compressSet.has(i)) line.classList.add("compress");
+    else if (pathSet && pathSet.has(i)) line.classList.add("flash");
+    svg.appendChild(line);
+  }
+  // nodes
+  for (let i = 0; i < n; i++) {
+    const g = document.createElementNS(SVG_NS, "g");
+    g.setAttribute("class", "node" + (parent[i] === i ? " root" : ""));
+    g.style.cursor = "pointer";
+    g.addEventListener("click", () => doFind(i));
+    const c = document.createElementNS(SVG_NS, "circle");
+    c.setAttribute("cx", nodes[i].x); c.setAttribute("cy", nodes[i].y);
+    c.setAttribute("r", 18);
+    let fill = "var(--accent)";
+    if (parent[i] === i) fill = "var(--accent2)";
+    if (pathSet && pathSet.has(i)) fill = "var(--orange)";
+    c.setAttribute("fill", fill);
+    const t = document.createElementNS(SVG_NS, "text");
+    t.setAttribute("x", nodes[i].x); t.setAttribute("y", nodes[i].y + 5);
+    t.setAttribute("text-anchor", "middle");
+    t.textContent = i;
+    g.appendChild(c); g.appendChild(t);
+    svg.appendChild(g);
+  }
+  stats();
+  document.getElementById("arrtxt").innerHTML =
+    "<b>parent[]</b> = [" + parent.join(", ") + "]" +
+    (mode === "rank" || mode === "both" ? "<br><b>rank[]</b> = [" + rank.join(", ") + "]" : "");
+}
+
+function doUnion(a, b) {
+  if (a < 0 || b < 0 || a >= n || b >= n) { log(`<span class="hl">bad index</span>`); return; }
+  // find roots (with compression if mode allows, but keep union log readable)
+  const ra = find_internal(a), rb = find_internal(b);
+  if (ra === rb) { log(`union(${a},${b}) → already same group (root ${ra})`); render(); return; }
+
+  if (mode === "naive" || mode === "compress") {
+    // blind: attach root(a) under root(b)
+    parent[ra] = rb;
+    log(`union(${a},${b}): root ${ra} → ${rb} <span class="hl">(blind)</span>`);
+  } else {
+    // by rank: attach shorter under taller
+    if (rank[ra] < rank[rb]) {
+      parent[ra] = rb;
+      log(`union(${a},${b}): rank ${ra}(${rank[ra]}) &lt; ${rb}(${rank[rb]}) → ${ra} under ${rb}`);
+    } else if (rank[ra] > rank[rb]) {
+      parent[rb] = ra;
+      log(`union(${a},${b}): rank ${rb}(${rank[rb]}) &lt; ${ra}(${rank[ra]}) → ${rb} under ${ra}`);
+    } else {
+      parent[rb] = ra;
+      rank[ra]++;
+      log(`union(${a},${b}): equal rank → ${rb} under ${ra}, rank[${ra}]++ = ${rank[ra]}`);
+    }
+  }
+  render();
+}
+
+async function doFind(x) {
+  if (x < 0 || x >= n) { log(`<span class="hl">bad index</span>`); return; }
+  const path = [];
+  const root = find_internal(x, path);
+  document.getElementById("laststeps").textContent = path.length - 1;
+  const pathSet = new Set(path.slice(0, -1)); // edges from each non-root on path
+  render(pathSet);
+  log(`find(${x}) → root <b>${root}</b>, walked <span class="hl">${path.length-1}</span> step(s): ${path.join(" → ")}`);
+
+  // path compression: re-point every node on path straight to root
+  if (mode === "compress" || mode === "both") {
+    await sleep(550);
+    const compressSet = new Set();
+    for (const node of path) {
+      if (node !== root && parent[node] !== root) {
+        parent[node] = root;
+        compressSet.add(node);
+      }
+    }
+    if (compressSet.size) {
+      render(pathSet, compressSet);
+      log(`<b>compress:</b> re-linked {${[...compressSet].join(", ")}} straight to ${root}`);
+      await sleep(550);
+      render();
+    }
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// build a degenerate chain: union in sequence so naive makes a line
+function worstCase() {
+  init(n);
+  // To force a chain under naive: always attach existing root under the new node's root.
+  // union(0,1), then union(root,2)... naive points ra->rb each time
+  for (let i = 1; i < n; i++) doUnionSilent(0, i);
+  log(`built chain via union(0,1..${n-1}). Try find(0) and compare variants.`, true);
+  render();
+}
+
+function doUnionSilent(a, b) {
+  const ra = find_internal(a), rb = find_internal(b);
+  if (ra === rb) return;
+  if (mode === "naive" || mode === "compress") parent[ra] = rb;
+  else {
+    if (rank[ra] < rank[rb]) parent[ra] = rb;
+    else if (rank[ra] > rank[rb]) parent[rb] = ra;
+    else { parent[rb] = ra; rank[ra]++; }
+  }
+}
+
+function randUnions() {
+  for (let k = 0; k < 5; k++) {
+    const a = Math.floor(Math.random()*n), b = Math.floor(Math.random()*n);
+    if (a !== b) doUnion(a, b);
+  }
+}
+
+// wiring
+document.querySelectorAll(".mode-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    mode = btn.dataset.mode;
+    init(n);
+    log(`mode → <b>${mode}</b>`);
+  });
+});
+document.getElementById("reset").onclick = () => init(parseInt(document.getElementById("ncount").value) || 10);
+document.getElementById("dounion").onclick = () =>
+  doUnion(parseInt(document.getElementById("ua").value), parseInt(document.getElementById("ub").value));
+document.getElementById("dofind").onclick = () =>
+  doFind(parseInt(document.getElementById("fx").value));
+document.getElementById("worstcase").onclick = worstCase;
+document.getElementById("randuni").onclick = randUnions;
+
+init(n);
+</script>
+</body>
+</html>

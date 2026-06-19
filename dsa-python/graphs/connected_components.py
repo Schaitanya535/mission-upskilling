@@ -48,9 +48,34 @@ def count_components(n: int, adj: list[list[int]]) -> int:
     return count
 
 
+def union(parent: list[int], rank: list[int], a: int, b: int) -> bool:
+    ra, rb = find(parent, a), find(parent, b)
+    if ra == rb:
+        return False
+    if rank[ra] < rank[rb]:
+        ra, rb = rb, ra
+    parent[rb] = ra
+    if rank[ra] == rank[rb]:
+        rank[ra] += 1
+    return True
+
+
+def find(parents: list[int], x: int) -> int:
+    if parents[x] == x:
+        return x
+    else:
+        r = find(parents, parents[x])
+        parents[x] = r
+        return r
+
+
 def brute_count_components(n: int, adj: list[list[int]]) -> int:
-    """Oracle. Union-find: union every edge, count distinct roots."""
-    raise NotImplementedError
+    parent: list[int] = list(range(n))
+    rank: list[int] = [0] * n
+    for x, list_y in enumerate(adj):
+        for y in list_y:
+            union(parent, rank, x, y)
+    return len({find(parent, i) for i in range(n)})
 
 
 if __name__ == "__main__":
@@ -63,5 +88,5 @@ if __name__ == "__main__":
     for n, adj, want in cases:
         got = count_components(n, adj)
         assert got == want
-        # assert got == want == brute_count_components(n, adj), (n, adj, got, want)
+        assert got == want == brute_count_components(n, adj), (n, adj, got, want)
     print("ok")
