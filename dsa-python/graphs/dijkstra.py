@@ -1,4 +1,4 @@
-import heapq  # noqa: F401 -- you'll need it (min-heap frontier); unused until you implement
+import heapq
 
 """
 Problem 3 — Dijkstra: shortest weighted path from a source.
@@ -33,7 +33,9 @@ Target: O((n + E) log n) time.
 """
 
 
-def bfs(src: int, adj: list[list[tuple[int, int]]], dist_so_far: int, dists: list[int]):
+def realxed_dfs_per_node_heap(
+    src: int, adj: list[list[tuple[int, int]]], dist_so_far: int, dists: list[int]
+):
     adj_nodes = adj[src]
     heap = []
     for node, weight in adj_nodes:
@@ -42,13 +44,13 @@ def bfs(src: int, adj: list[list[tuple[int, int]]], dist_so_far: int, dists: lis
             heapq.heappush(heap, (weight, node))
     while len(heap):
         weight, node = heapq.heappop(heap)
-        bfs(node, adj, dist_so_far + weight, dists)
+        realxed_dfs_per_node_heap(node, adj, dist_so_far + weight, dists)
 
 
-def brute_dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
+def realaxed_dfs(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
     distance = [-1] * n
     distance[src] = dist_so_far = 0
-    bfs(src, adj, dist_so_far, distance)
+    realxed_dfs_per_node_heap(src, adj, dist_so_far, distance)
     return distance
     # raise NotImplementedError
 
@@ -67,9 +69,17 @@ def dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
     return distance
 
 
-# def brute_dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
-#     """Oracle. Bellman-Ford: relax every edge n-1 times. No heap."""
-#     raise NotImplementedError
+def brute_dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
+    """Oracle. Bellman-Ford: relax every edge n-1 times. No heap."""
+    # raise NotImplementedError
+    dist = [(float("inf"))] * n
+    dist[src] = 0
+    for _ in range(n - 1):
+        for u, nodes in enumerate(adj):
+            for v, weight in nodes:
+                if dist[u] != float("inf") and dist[u] + weight < dist[v]:
+                    dist[v] = dist[u] + weight
+    return [-1 if val == float("inf") else int(val) for val in dist]
 
 
 if __name__ == "__main__":
@@ -85,7 +95,5 @@ if __name__ == "__main__":
     ]
     for n, adj, src, want in cases:
         got = dijkstra(n, adj, src)
-        # print(got)
         assert got == want == brute_dijkstra(n, adj, src), (n, adj, src, got, want)
-        assert got == want
     print("ok")
