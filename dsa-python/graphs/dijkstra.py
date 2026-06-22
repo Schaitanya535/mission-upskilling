@@ -33,13 +33,43 @@ Target: O((n + E) log n) time.
 """
 
 
-def dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
-    raise NotImplementedError
+def bfs(src: int, adj: list[list[tuple[int, int]]], dist_so_far: int, dists: list[int]):
+    adj_nodes = adj[src]
+    heap = []
+    for node, weight in adj_nodes:
+        if dists[node] == -1 or (dist_so_far + weight) < dists[node]:
+            dists[node] = dist_so_far + weight
+            heapq.heappush(heap, (weight, node))
+    while len(heap):
+        weight, node = heapq.heappop(heap)
+        bfs(node, adj, dist_so_far + weight, dists)
 
 
 def brute_dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
-    """Oracle. Bellman-Ford: relax every edge n-1 times. No heap."""
-    raise NotImplementedError
+    distance = [-1] * n
+    distance[src] = dist_so_far = 0
+    bfs(src, adj, dist_so_far, distance)
+    return distance
+    # raise NotImplementedError
+
+
+def dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
+    distance = [-1] * n
+    heap = [(0, src)]
+    while heap:
+        dist_so_far, node = heapq.heappop(heap)
+        if distance[node] == -1 or dist_so_far < distance[node]:
+            distance[node] = dist_so_far
+        adj_nodes = adj[node]
+        for adj_node, weight in adj_nodes:
+            if distance[adj_node] == -1 or dist_so_far + weight < distance[adj_node]:
+                heapq.heappush(heap, (dist_so_far + weight, adj_node))
+    return distance
+
+
+# def brute_dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
+#     """Oracle. Bellman-Ford: relax every edge n-1 times. No heap."""
+#     raise NotImplementedError
 
 
 if __name__ == "__main__":
@@ -55,5 +85,7 @@ if __name__ == "__main__":
     ]
     for n, adj, src, want in cases:
         got = dijkstra(n, adj, src)
+        # print(got)
         assert got == want == brute_dijkstra(n, adj, src), (n, adj, src, got, want)
+        assert got == want
     print("ok")
