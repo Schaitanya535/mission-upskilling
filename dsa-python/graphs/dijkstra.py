@@ -33,26 +33,25 @@ Target: O((n + E) log n) time.
 """
 
 
-def realxed_dfs_per_node_heap(
-    src: int, adj: list[list[tuple[int, int]]], dist_so_far: int, dists: list[int]
-):
-    adj_nodes = adj[src]
-    heap = []
-    for node, weight in adj_nodes:
-        if dists[node] == -1 or (dist_so_far + weight) < dists[node]:
-            dists[node] = dist_so_far + weight
-            heapq.heappush(heap, (weight, node))
-    while len(heap):
-        weight, node = heapq.heappop(heap)
-        realxed_dfs_per_node_heap(node, adj, dist_so_far + weight, dists)
-
-
-def realaxed_dfs(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
-    distance = [-1] * n
-    distance[src] = dist_so_far = 0
-    realxed_dfs_per_node_heap(src, adj, dist_so_far, distance)
-    return distance
-    # raise NotImplementedError
+# def realxed_dfs_per_node_heap(
+#     src: int, adj: list[list[tuple[int, int]]], dist_so_far: int, dists: list[int]
+# ):
+#     adj_nodes = adj[src]
+#     heap = []
+#     for node, weight in adj_nodes:
+#         if dists[node] == -1 or (dist_so_far + weight) < dists[node]:
+#             dists[node] = dist_so_far + weight
+#             heapq.heappush(heap, (weight, node))
+#     while len(heap):
+#         weight, node = heapq.heappop(heap)
+#         realxed_dfs_per_node_heap(node, adj, dist_so_far + weight, dists)
+#
+#
+# def realaxed_dfs(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
+#     distance = [-1] * n
+#     distance[src] = dist_so_far = 0
+#     realxed_dfs_per_node_heap(src, adj, dist_so_far, distance)
+#     return distance
 
 
 def dijkstra(n: int, adj: list[list[tuple[int, int]]], src: int) -> list[int]:
