@@ -103,6 +103,8 @@ def brute_nn(points: list[tuple[float, float]], query: tuple[float, float]) -> i
 if __name__ == "__main__":
     line = [(0.0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
     chain = [[1], [0, 2], [1, 3], [2, 4], [3]]
+
+    # Navigable graph: greedy reaches the true NN, so greedy == brute.
     cases = [
         (line, chain, 0, (3.4, 0), 3),
         (line, chain, 0, (0.1, 0), 0),
@@ -111,4 +113,15 @@ if __name__ == "__main__":
     for points, adj, entry, query, want in cases:
         got = greedy_nn_walk(points, adj, entry, query)
         assert got == want == brute_nn(points, query), (entry, query, got, want)
+
+    # --- LOCAL MINIMUM DEMO: greedy gets trapped, disagrees with brute ---
+    # Rewired so node 3 (the true NN for query 3.4) is unreachable from the walk:
+    # 0 -> 1 -> 2 -> 4 (local min, only neighbour 1 is farther). True NN = 3.
+    trap_chain = [[1], [0, 2], [1, 4], [2, 4], [1]]
+    g = greedy_nn_walk(line, trap_chain, 0, (3.4, 0))
+    b = brute_nn(line, (3.4, 0))
+    assert g == 4 and b == 3 and g != b, (g, b)  # greedy stuck at 4, true NN is 3
+    # WHY HNSW: greedy on one sparse layer misses the global NN. Layers (long hops)
+    # + a wider beam (ef, Problem 5) are what close this recall gap.
+
     print("ok")
