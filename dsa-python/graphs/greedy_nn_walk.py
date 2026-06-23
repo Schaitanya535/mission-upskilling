@@ -95,7 +95,9 @@ def greedy_nn_walk(
 
 def brute_nn(points: list[tuple[float, float]], query: tuple[float, float]) -> int:
     """Oracle. Linear scan, min squared distance. The true nearest neighbour."""
-    raise NotImplementedError
+    return min(
+        [(get_euclidian_dist(point, query), i) for i, point in enumerate(points)]
+    )[1]
 
 
 if __name__ == "__main__":
@@ -108,6 +110,5 @@ if __name__ == "__main__":
     ]
     for points, adj, entry, query, want in cases:
         got = greedy_nn_walk(points, adj, entry, query)
-        print(got)
-        # assert got == want == brute_nn(points, query), (entry, query, got, want)
+        assert got == want == brute_nn(points, query), (entry, query, got, want)
     print("ok")
