@@ -76,7 +76,21 @@ def greedy_nn_walk(
     entry: int,
     query: tuple[float, float],
 ) -> int:
-    raise NotImplemented
+    curr_src = entry
+    while True:
+        curr_dist = get_euclidian_dist(points[curr_src], query)
+        adj_nodes = adj[curr_src]
+        distances = [
+            (get_euclidian_dist(points[adj_node], query), adj_node)
+            for adj_node in adj_nodes
+        ]
+        distances.append((curr_dist, curr_src))
+        min_adj_node = min(distances)
+        if min_adj_node[1] == curr_src:
+            break
+        else:
+            curr_src = min_adj_node[1]
+    return curr_src
 
 
 def brute_nn(points: list[tuple[float, float]], query: tuple[float, float]) -> int:
